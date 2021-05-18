@@ -1,0 +1,249 @@
+<template>
+    <div id="jsmind_container">
+       <label>
+          <input type="text" v-model="info">
+          <button v-on:click="send()">Add 1</button>
+        </label>
+        <p>{{info}}</p>
+        <p>{{atest}}</p>
+        <a :href="APIurl">代理后的API</a>
+
+    </div>
+</template>
+<script>
+import "../style/jsmind.css";
+import "../js/jsmind.js";
+import "../js/jsmind.draggable.js";
+import axios from 'axios';
+// import jsMind from "jsmind";
+
+var xx = {};
+var nodedata = [];
+
+
+
+// var vm = new Vue({
+//     el:'#app',
+//     data:{
+//         info:'hello world!',
+//     }
+// })
+axios.withCredentials= false
+
+export default {
+    name : 'mindmap',
+    
+   data() {
+      return {
+        info :"niannnnhi",
+        atest : "null",
+        APIurl : "/mindmap/books/",
+        // jsonnode : {},
+        jsondata : {},
+        // nodedata : [{},{}],
+        // _this : this
+      }
+   },
+   created(){
+   },
+   computed:{
+   },
+   methods:{
+     send(){
+          axios
+              .get('/mindmap/books/')
+              .then(
+              response => {
+                // alert("成功："+JSON.stringify(response)),
+                // this.atest = response.data
+
+                // 切记：要加this，否则就nodefind，找了好久才试出错误所在
+                this.nodesdata(response.data)
+                }).catch(
+              response => {
+                console.log(JSON.stringify(response))
+                alert('请求失败'+'Error Info:' +response+"                          "+ JSON.stringify(response));
+              },
+            );
+      },
+    nodesdata(jsondata){
+      // var _this = this;
+      // this.atest = jsondata;
+
+      nodedata.push({ id: "root", isroot: true, topic: "jsMind" });
+
+
+      // 重点！！！！ for in 遍历出的xx不是列表中的对象，而是编号！！！！！
+      for (xx in jsondata)
+      {
+      // this.atest = jsondata[xx].btitle;
+
+        nodedata.push({
+          id : xx,
+          parentid : "root",
+          topic : jsondata[xx].btitle
+        })
+      };
+      this.showmindmap(nodedata)
+      // this.data = nodedata
+      // this.atest = nodedata
+    },
+    showmindmap(inputdata){
+      var mind = {
+      /* 元数据，定义思维导图的名称、作者、版本等信息 */
+      meta: {
+        name: "demo",
+        author: "hizzgdev@163.com",
+        version: "0.2",
+      },
+    /* 数据格式声明 */
+      format: "node_array",
+    //   表对象格式
+      data: inputdata,
+      // [
+      //   { id: "root", isroot: true, topic: "jsMind" },
+
+      //   {
+      //     id: "sub1",
+      //     parentid: "root",
+      //     topic: "sub1",
+      //     index: "000000",
+      //     "background-color": "#0000ff",
+      //   },
+      //   { id: "sub11", parentid: "sub1", topic: "sub11" },
+      //   { id: "sub12", parentid: "sub1", topic: "sub12" },
+      //   { id: "sub13", parentid: "sub1", topic: "sub13" },
+
+      //   { id: "sub2", parentid: "root", topic: "sub2" },
+      //   { id: "sub21", parentid: "sub2", topic: "sub21" },
+      //   {
+      //     id: "sub22",
+      //     parentid: "sub2",
+      //     topic: "sub22",
+      //     "foreground-color": "#33ff33",
+      //   },
+
+      //   { id: "sub3", parentid: "root", topic: "sub3" },
+      // ],
+
+    // 树对象格式
+    //    data:{"id":"root","topic":"jsMind","children":[
+    //     {"id":"easy","topic":"Easy","direction":"left","expanded":false,"children":[
+    //         {"id":"easy1","topic":"Easy to show"},
+    //         {"id":"easy2","topic":"Easy to edit"},
+    //         {"id":"easy3","topic":"Easy to store"},
+    //         {"id":"easy4","topic":"Easy to embed"}
+    //     ]},
+    //     {"id":"open","topic":"Open Source","direction":"right","expanded":true,"children":[
+    //         {"id":"open1","topic":"on GitHub"},
+    //         {"id":"open2","topic":"BSD License"}
+    //     ]},
+    //     {"id":"powerful","topic":"Powerful","direction":"right","children":[
+    //         {"id":"powerful1","topic":"Base on Javascript"},
+    //         {"id":"powerful2","topic":"Base on HTML5"},
+    //         {"id":"powerful3","topic":"Depends on you"}
+    //     ]},
+    //     {"id":"other","topic":"test node","direction":"left","children":[
+    //         {"id":"other1","topic":"I'm from local variable"},
+    //         {"id":"other2","topic":"I can do everything"}
+    //     ]}
+    // ]},
+    };
+
+    var options = {
+      container: "jsmind_container",
+      editable: true,
+      theme: "info",
+    };
+    var jm = jsMind.show(options, mind);
+    jm.add_node("sub2", "sub23", "new node", { "background-color": "red" });
+    jm.set_node_color("sub21", "green", "#ccc");
+    jm.set_node_color("sub22", "green", "#ccc");
+    }
+      
+   },
+     mounted() {
+    // var mind = {
+    //   /* 元数据，定义思维导图的名称、作者、版本等信息 */
+    //   meta: {
+    //     name: "demo",
+    //     author: "hizzgdev@163.com",
+    //     version: "0.2",
+    //   },
+    // /* 数据格式声明 */
+    //   format: "node_array",
+    // //   表对象格式
+    //   data: this.data,
+    //   // [
+    //   //   { id: "root", isroot: true, topic: "jsMind" },
+
+    //   //   {
+    //   //     id: "sub1",
+    //   //     parentid: "root",
+    //   //     topic: "sub1",
+    //   //     index: "000000",
+    //   //     "background-color": "#0000ff",
+    //   //   },
+    //   //   { id: "sub11", parentid: "sub1", topic: "sub11" },
+    //   //   { id: "sub12", parentid: "sub1", topic: "sub12" },
+    //   //   { id: "sub13", parentid: "sub1", topic: "sub13" },
+
+    //   //   { id: "sub2", parentid: "root", topic: "sub2" },
+    //   //   { id: "sub21", parentid: "sub2", topic: "sub21" },
+    //   //   {
+    //   //     id: "sub22",
+    //   //     parentid: "sub2",
+    //   //     topic: "sub22",
+    //   //     "foreground-color": "#33ff33",
+    //   //   },
+
+    //   //   { id: "sub3", parentid: "root", topic: "sub3" },
+    //   // ],
+
+    // // 树对象格式
+    // //    data:{"id":"root","topic":"jsMind","children":[
+    // //     {"id":"easy","topic":"Easy","direction":"left","expanded":false,"children":[
+    // //         {"id":"easy1","topic":"Easy to show"},
+    // //         {"id":"easy2","topic":"Easy to edit"},
+    // //         {"id":"easy3","topic":"Easy to store"},
+    // //         {"id":"easy4","topic":"Easy to embed"}
+    // //     ]},
+    // //     {"id":"open","topic":"Open Source","direction":"right","expanded":true,"children":[
+    // //         {"id":"open1","topic":"on GitHub"},
+    // //         {"id":"open2","topic":"BSD License"}
+    // //     ]},
+    // //     {"id":"powerful","topic":"Powerful","direction":"right","children":[
+    // //         {"id":"powerful1","topic":"Base on Javascript"},
+    // //         {"id":"powerful2","topic":"Base on HTML5"},
+    // //         {"id":"powerful3","topic":"Depends on you"}
+    // //     ]},
+    // //     {"id":"other","topic":"test node","direction":"left","children":[
+    // //         {"id":"other1","topic":"I'm from local variable"},
+    // //         {"id":"other2","topic":"I can do everything"}
+    // //     ]}
+    // // ]},
+    // };
+
+    // var options = {
+    //   container: "jsmind_container",
+    //   editable: true,
+    //   theme: "info",
+    // };
+    // var jm = jsMind.show(options, mind);
+    // jm.add_node("sub2", "sub23", "new node", { "background-color": "red" });
+    // jm.set_node_color("sub21", "green", "#ccc");
+    // jm.set_node_color("sub22", "green", "#ccc");
+  },
+}
+</script>
+<style  scoped>
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 60px;
+}
+</style>
+
