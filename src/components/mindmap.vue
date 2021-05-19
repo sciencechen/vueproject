@@ -3,8 +3,7 @@
        <label>
           <input type="text" v-model="info">
           <button v-on:click="send()">Add 1</button>
-        </label>
-        <p>{{info}}</p>
+       </label>
         <p>{{atest}}</p>
         <a :href="APIurl">代理后的API</a>
 
@@ -22,12 +21,6 @@ var nodedata = [];
 
 
 
-// var vm = new Vue({
-//     el:'#app',
-//     data:{
-//         info:'hello world!',
-//     }
-// })
 axios.withCredentials= false
 
 export default {
@@ -35,13 +28,14 @@ export default {
     
    data() {
       return {
-        info :"niannnnhi",
         atest : "null",
         APIurl : "/mindmap/books/",
         // jsonnode : {},
         jsondata : {},
         // nodedata : [{},{}],
         // _this : this
+        nodehref : '',
+        nodetopic : '',
       }
    },
    created(){
@@ -70,18 +64,23 @@ export default {
       // var _this = this;
       // this.atest = jsondata;
 
-      nodedata.push({ id: "root", isroot: true, topic: "jsMind" });
+      nodedata.push({ id: "root", isroot: true, topic: '<a href='+this.APIurl+'>'+this.info+'</a>' });
+      // nodedata.push({ id: "bilibili", parentid: root, topic: 'nih' });
 
 
       // 重点！！！！ for in 遍历出的xx不是列表中的对象，而是编号！！！！！
       for (xx in jsondata)
       {
-      // this.atest = jsondata[xx].btitle;
+      // this.atest = jsondata[xx].bpub_date;
+      // this.atest = jsondata;
+
 
         nodedata.push({
-          id : xx,
-          parentid : "root",
-          topic : jsondata[xx].btitle
+          id : jsondata[xx].mid,
+          // id : xx,
+          parentid : jsondata[xx].parentid,
+          topic : '<a href='+jsondata[xx].url+'>'+jsondata[xx].title+'</a>'
+          
         })
       };
       this.showmindmap(nodedata)
@@ -154,6 +153,7 @@ export default {
       container: "jsmind_container",
       editable: true,
       theme: "info",
+      mode :'full', 
     };
     var jm = jsMind.show(options, mind);
     jm.add_node("sub2", "sub23", "new node", { "background-color": "red" });
