@@ -59,8 +59,7 @@ export default {
       url: null,
 
       // searchbyroot: null,
-      searchbyroot: 'root',
-
+      searchbyroot: "人工智能",
 
       keyword: null,
       atest: null,
@@ -157,9 +156,8 @@ export default {
         .get("/mindmap/expandnode/", {
           params: {
             mid: this.testjm.get_selected_node().id,
-            exword : this.exword,
-            splice : this.splice
-
+            exword: this.exword,
+            splice: this.splice,
           },
         })
         .then((response) => {
@@ -248,26 +246,46 @@ export default {
       //   topic: "<a href=" + this.APIurl + ">" + this.info + "</a>",
       // });
       // nodedata.push({ id: "bilibili", parentid: root, topic: 'nih' });
+      var topic = "";
+      // if (jsondata[xx].type == "a") {
+      //   topic =
+      //     "<a href=" + jsondata[xx].url + ">" + jsondata[xx].title + "</a>";
+      // } else {
+      //   topic = jsondata[xx].title;
+      // }
 
       // 重点！！！！ for in 遍历出的xx不是列表中的对象，而是编号！！！！！
       for (xx in jsondata) {
         // this.atest = jsondata[xx].bpub_date;
         // this.atest = jsondata;
-        if (jsondata[xx].parentid == "isroot" ){
-          nodedata.push({ 
-            id: jsondata[xx].mid, 
-            isroot: true, 
-            topic: "<a href=" + jsondata[xx].url + ">" + jsondata[xx].title + "</a>"
-             })
-        }else{
+        if (jsondata[xx].parentid == "isroot") {
+          if (jsondata[xx].nodetype == "a") {
+            topic =
+              "<a href=" + jsondata[xx].url + ">" + jsondata[xx].title + "</a>";
+          } else if(jsondata[xx].nodetype == "h") {
+            topic = jsondata[xx].title;
+          }
+          // alert(JSON.stringify(jsondata[xx]))
           nodedata.push({
-          id: jsondata[xx].mid,
-          // id : xx,
-          parentid: jsondata[xx].parentid,
-          topic:
-            "<a href=" + jsondata[xx].url + ">" + jsondata[xx].title + "</a>",
-        });
-        }        
+            id: jsondata[xx].mid,
+            isroot: true,
+            topic: topic,
+          });
+        } else {
+          if (jsondata[xx].nodetype == "a") {
+            topic =
+              "<a href=" + jsondata[xx].url + ">" + jsondata[xx].title + "</a>";
+          } else if(jsondata[xx].nodetype == "h") {
+            topic = jsondata[xx].title;
+          }
+
+          nodedata.push({
+            id: jsondata[xx].mid,
+            // id : xx,
+            parentid: jsondata[xx].parentid,
+            topic: topic,
+          });
+        }
       }
       this.showmindmap(nodedata);
       // this.data = nodedata
