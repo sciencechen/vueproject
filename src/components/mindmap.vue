@@ -2,20 +2,34 @@
   <div id="//jsmind_container">
     <div>
       topic:<input type="text" v-model="topic" placeholder="topic" /><br />
-      type:<input type="text" v-model="type" placeholder="type" /><br />
+      type:
+      <el-radio-group v-model="type" size="medium">
+        <el-radio-button label="h"></el-radio-button>
+        <el-radio-button label="a"></el-radio-button>
+        <el-radio-button label="img"></el-radio-button>
+        <el-radio-button label="video"></el-radio-button>
+        <el-radio-button label="audio"></el-radio-button>
+      </el-radio-group>
+      <br />
       url:<input type="text" v-model="url" placeholder="url" /><br />
       <button v-on:click="creatroot()">创建根节点</button>
     </div>
     <br />
-    <label>
-      <input type="text" v-model="searchbyroot" />
-      <button v-on:click="getjsmind()">showmindmap</button>
-    </label>
-    <label>
-      <input type="text" v-model="keyword" />
-      <button v-on:click="startcrawler()">search</button>
-      <h2>{{ keyword }}</h2>
-    </label>
+    <div>
+      <el-row class="demo-autocomplete">
+        <el-col :span="12">
+          <div class="sub-title">showmindmap</div>
+          <el-autocomplete
+            class="inline-input"
+            v-model="searchbyroot"
+            :fetch-suggestions="querySearch"
+            placeholder="请输入根节点"
+            @select="handleSelect"
+          ></el-autocomplete>
+        </el-col>
+      </el-row>
+      <el-button type="success" icon="el-icon-check" circle v-on:click="getjsmindbyroot()"></el-button>
+    </div>
     <br />
     <div style="margin-top: 20px">
       <el-radio-group v-model="splice" size="mini">
@@ -25,13 +39,22 @@
       <el-input v-model="exword" placeholder="请输入拓展词"></el-input>
       <el-radio-group v-model="exword" size="medium">
         <el-radio-button label="历史"></el-radio-button>
+        <el-radio-button label="原理"></el-radio-button>
         <el-radio-button label="学习路线"></el-radio-button>
         <el-radio-button label="知识点"></el-radio-button>
         <el-radio-button label="目的"></el-radio-button>
+
       </el-radio-group>
       <el-button type="primary" v-on:click="expandnode()">拓展节点</el-button>
     </div>
-
+    <div>
+      <el-button
+        type="danger"
+        icon="el-icon-delete"
+        circle
+        v-on:click="deletenode()"
+      ></el-button>
+    </div>
     <p>test: {{ atest }}</p>
     <a :href="APIurl">代理后的API</a>
     <div id="jsmind_container"></div>
@@ -53,15 +76,17 @@ export default {
 
   data() {
     return {
+      // seacherbyroot
+      restaurants: [],
+
       // 创建根节点
       topic: null,
-      type: null,
+      type: "h",
       url: null,
 
       // searchbyroot: null,
-      searchbyroot: "人工智能",
+      searchbyroot: "",
 
-      keyword: null,
       atest: null,
       APIurl: "/mindmap/books/",
       // jsonnode : {},
@@ -71,8 +96,8 @@ export default {
       nodehref: "",
       nodetopic: "",
       testjm: null,
-      exword: "",
-      splice: "",
+      exword: "知识点",
+      splice: "不带上节点",
     };
   },
   created() {},
@@ -166,6 +191,8 @@ export default {
 
           // 切记：要加this，否则就nodefind，找了好久才试出错误所在
           alert(JSON.stringify(response));
+          // this.$router.go(0);
+          this.nodesdata(response.data);
         })
         .catch((response) => {
           console.log(JSON.stringify(response));
@@ -179,7 +206,44 @@ export default {
         });
     },
 
-    getjsmind() {
+    // 删除节点
+    deletenode() {
+      //  又是忘记加this了，又找了好久错误，又是 xxxx is not defined
+      //  this.atest = this.testjm.get_selected_node().id
+      // alert(this.testjm.get_selected_node().id);
+      var selectednode = this.testjm.get_selected_node();
+      var predata = this.testjm.get_data("node_array");
+      this.testjm.remove_node(selectednode);
+      var laterdata = this.testjm.get_data("node_array");
+
+      // this.atest = this.testjm.get_data("node_array").data;
+      // alert(nodelist);
+
+      axios
+        .post("/mindmap/deletenode/", {
+          predata: predata,
+          laterdata: laterdata,
+        })
+        .then((response) => {
+          // alert("成功："+JSON.stringify(response)),
+          // this.atest = response.data
+
+          // 切记：要加this，否则就nodefind，找了好久才试出错误所在
+          alert(JSON.stringify(response));
+        })
+        .catch((response) => {
+          console.log(JSON.stringify(response));
+          alert(
+            "请求失败" +
+              "Error Info:" +
+              response +
+              "                          " +
+              JSON.stringify(response)
+          );
+        });
+    },
+
+    getjsmindbyroot() {
       if (this.searchbyroot == null) {
         alert("searchbyroot未填写");
       } else {
@@ -195,32 +259,6 @@ export default {
 
             // 切记：要加this，否则就nodefind，找了好久才试出错误所在
             this.nodesdata(response.data);
-          })
-          .catch((response) => {
-            console.log(JSON.stringify(response));
-            alert(
-              "请求失败" +
-                "Error Info:" +
-                response +
-                "                          " +
-                JSON.stringify(response)
-            );
-          });
-      }
-    },
-    startcrawler() {
-      if (this.keyword == null) {
-        alert("keyword未填写");
-      } else {
-        axios
-          .get("/mindmap/startscraler/", {
-            params: {
-              keyword: this.keyword,
-            },
-          })
-          .then((response) => {
-            alert("成功：" + JSON.stringify(response));
-            // this.atest = response.data
           })
           .catch((response) => {
             console.log(JSON.stringify(response));
@@ -262,7 +300,7 @@ export default {
           if (jsondata[xx].nodetype == "a") {
             topic =
               "<a href=" + jsondata[xx].url + ">" + jsondata[xx].title + "</a>";
-          } else if(jsondata[xx].nodetype == "h") {
+          } else if (jsondata[xx].nodetype == "h") {
             topic = jsondata[xx].title;
           }
           // alert(JSON.stringify(jsondata[xx]))
@@ -275,7 +313,7 @@ export default {
           if (jsondata[xx].nodetype == "a") {
             topic =
               "<a href=" + jsondata[xx].url + ">" + jsondata[xx].title + "</a>";
-          } else if(jsondata[xx].nodetype == "h") {
+          } else if (jsondata[xx].nodetype == "h") {
             topic = jsondata[xx].title;
           }
 
@@ -311,14 +349,63 @@ export default {
         theme: "info",
         mode: "full",
       };
-      var jm = jsMind.show(options, mind);
-      jm.add_node("sub2", "sub23", "new node", { "background-color": "red" });
-      jm.set_node_color("sub21", "green", "#ccc");
-      jm.set_node_color("sub22", "green", "#ccc");
+      // 实现了拓展节点后实时刷新思维导图
+      if (this.testjm == null){
+        var jm = jsMind.show(options, mind);
+      }else{
+        // 如果this.testjm.show(options, mind)，就会报错，应该不允许重复赋值options
+        this.testjm.show(mind);
+      }
+
       this.testjm = jm;
+    },
+
+    // searchbyroot的输入建议--element
+    querySearch(queryString, cb) {
+      var restaurants = this.restaurants;
+      var results = queryString
+        ? restaurants.filter(this.createFilter(queryString))
+        : restaurants;
+      // 调用 callback 返回建议列表的数据
+      cb(results);
+    },
+    createFilter(queryString) {
+      return (restaurant) => {
+        return (
+          restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) ===
+          0
+        );
+      };
+    },
+    loadAll() {
+      axios
+        .get("/mindmap/getrootlist/")
+        .then((response) => {
+          // alert("成功："+JSON.stringify(response)),
+          // this.atest = response.data
+
+          // 切记：要加this，否则就nodefind，找了好久才试出错误所在
+          this.restaurants = response.data;
+        })
+        .catch((response) => {
+          console.log(JSON.stringify(response));
+          alert(
+            "请求失败" +
+              "Error Info:" +
+              response +
+              "                          " +
+              JSON.stringify(response)
+          );
+        });
+    },
+    handleSelect(item) {
+      console.log(item);
     },
   },
   mounted() {
+    this.loadAll();
+    // this.restaurants = this.loadAll();
+
     // var mind = {
     //   /* 元数据，定义思维导图的名称、作者、版本等信息 */
     //   meta: {
@@ -387,7 +474,18 @@ export default {
   },
 };
 </script>
-<style  scoped>
+<style scoped>
+/* element布局容器 */
+.el-header {
+  background-color: #b3c0d1;
+  color: #333;
+  line-height: 60px;
+}
+
+.el-aside {
+  color: #333;
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -397,4 +495,3 @@ export default {
   margin-top: 60px;
 }
 </style>
-
