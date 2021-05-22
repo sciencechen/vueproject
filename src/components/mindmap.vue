@@ -55,26 +55,18 @@
       <el-radio-group v-model="exword" size="medium">
         <el-radio-button label="历史"></el-radio-button>
         <el-radio-button label="原理"></el-radio-button>
+        <el-radio-button label="要学什么"></el-radio-button>
         <el-radio-button label="学习路线"></el-radio-button>
         <el-radio-button label="知识点"></el-radio-button>
         <el-radio-button label="目的"></el-radio-button>
       </el-radio-group>
     </div>
     <br />
-    <div>
-      <el-button
-        type="danger"
-        icon="el-icon-delete"
-        circle
-        v-on:click="deletenode()"
-      ></el-button>
-    </div>
     <p>test: {{ atest }}</p>
     <a :href="APIurl">代理后的API</a>
     <el-button @click="drawer = true" type="primary" style="margin-left: 16px">
       点我打开
     </el-button>
-
     <el-drawer title="随记" :visible.sync="drawer" :direction="direction">
       <span>
         <h1 align="center">
@@ -86,7 +78,14 @@
         <h1>目标：“根据要学的东西，自动生成回形针视频”</h1>
       </span>
     </el-drawer>
-
+    <div>
+      <el-button
+        type="danger"
+        icon="el-icon-delete"
+        circle
+        v-on:click="deletenode()"
+      ></el-button>
+    </div>
     <div id="jsmind_container"></div>
   </div>
 </template>
@@ -153,18 +152,28 @@ export default {
           .then((response) => {
             // alert("成功："+JSON.stringify(response)),
             // this.atest = response.data
-            var rootdata = [
-              {
-                id: response.data.mid,
-                isroot: true,
-                topic:
-                  "<a href=" +
-                  response.data.mid +
-                  ">" +
-                  response.data.topic +
-                  "</a>",
-              },
-            ];
+            if (response.data.nodetype == "a") {
+              var rootdata = [
+                {
+                  id: response.data.mid,
+                  isroot: true,
+                  topic:
+                    "<a href=" +
+                    response.data.mid +
+                    ">" +
+                    response.data.topic +
+                    "</a>",
+                },
+              ];
+            } else {
+              var rootdata = [
+                {
+                  id: response.data.mid,
+                  isroot: true,
+                  topic: response.data.topic,
+                },
+              ];
+            }
 
             var mind = {
               /* 元数据，定义思维导图的名称、作者、版本等信息 */
@@ -187,8 +196,8 @@ export default {
             };
             var jm = jsMind.show(options, mind);
             // jm.add_node("sub2", "sub23", "new node", { "background-color": "red" });
-            jm.set_node_color("sub21", "green", "#ccc");
-            jm.set_node_color("sub22", "green", "#ccc");
+            // jm.set_node_color("sub21", "green", "#ccc");
+            // jm.set_node_color("sub22", "green", "#ccc");
             this.testjm = jm;
           })
           .catch((response) => {
@@ -224,7 +233,7 @@ export default {
           // this.atest = response.data
 
           // 切记：要加this，否则就nodefind，找了好久才试出错误所在
-          alert(JSON.stringify(response));
+          // alert(JSON.stringify(response));
           // this.$router.go(0);
           this.nodesdata(response.data);
         })
@@ -261,9 +270,8 @@ export default {
         .then((response) => {
           // alert("成功："+JSON.stringify(response)),
           // this.atest = response.data
-
           // 切记：要加this，否则就nodefind，找了好久才试出错误所在
-          alert(JSON.stringify(response));
+          // alert(JSON.stringify(response));
         })
         .catch((response) => {
           console.log(JSON.stringify(response));
