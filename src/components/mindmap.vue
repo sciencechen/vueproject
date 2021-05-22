@@ -1,7 +1,12 @@
 <template>
   <div id="//jsmind_container">
     <div>
-      topic:<input type="text" v-model="topic" placeholder="topic" /><br />
+      topic:
+      <el-input
+        v-model="topic"
+        placeholder="topic"
+        style="width: 200px"
+      ></el-input>
       type:
       <el-radio-group v-model="type" size="medium">
         <el-radio-button label="h"></el-radio-button>
@@ -10,15 +15,14 @@
         <el-radio-button label="video"></el-radio-button>
         <el-radio-button label="audio"></el-radio-button>
       </el-radio-group>
-      <br />
-      url:<input type="text" v-model="url" placeholder="url" /><br />
-      <button v-on:click="creatroot()">创建根节点</button>
+      url:
+      <el-input v-model="url" placeholder="url" style="width: 100px"></el-input>
+      <el-button type="success" v-on:click="creatroot()">创建根节点</el-button>
     </div>
     <br />
     <div>
       <el-row class="demo-autocomplete">
         <el-col :span="12">
-          <div class="sub-title">showmindmap</div>
           <el-autocomplete
             class="inline-input"
             v-model="searchbyroot"
@@ -26,27 +30,37 @@
             placeholder="请输入根节点"
             @select="handleSelect"
           ></el-autocomplete>
+          <el-button
+            type="success"
+            icon="el-icon-check"
+            circle
+            v-on:click="getjsmindbyroot()"
+          ></el-button>
         </el-col>
       </el-row>
-      <el-button type="success" icon="el-icon-check" circle v-on:click="getjsmindbyroot()"></el-button>
     </div>
-    <br />
     <div style="margin-top: 20px">
       <el-radio-group v-model="splice" size="mini">
         <el-radio-button label="带上节点"></el-radio-button>
         <el-radio-button label="不带上节点"></el-radio-button>
       </el-radio-group>
-      <el-input v-model="exword" placeholder="请输入拓展词"></el-input>
+      <br />
+      <el-input
+        v-model="exword"
+        placeholder="请输入拓展词"
+        style="width: 200px"
+      ></el-input>
+      <el-button type="primary" v-on:click="expandnode()">拓展节点</el-button>
+      <br />
       <el-radio-group v-model="exword" size="medium">
         <el-radio-button label="历史"></el-radio-button>
         <el-radio-button label="原理"></el-radio-button>
         <el-radio-button label="学习路线"></el-radio-button>
         <el-radio-button label="知识点"></el-radio-button>
         <el-radio-button label="目的"></el-radio-button>
-
       </el-radio-group>
-      <el-button type="primary" v-on:click="expandnode()">拓展节点</el-button>
     </div>
+    <br />
     <div>
       <el-button
         type="danger"
@@ -57,6 +71,22 @@
     </div>
     <p>test: {{ atest }}</p>
     <a :href="APIurl">代理后的API</a>
+    <el-button @click="drawer = true" type="primary" style="margin-left: 16px">
+      点我打开
+    </el-button>
+
+    <el-drawer title="随记" :visible.sync="drawer" :direction="direction">
+      <span>
+        <h1 align="center">
+          我觉得人们应该更专注于学习本身，而不是花大量时间放在查找资料之类的重复的、低进步率的地方上
+        </h1>
+        <h1>
+          这个项目的目的是降低信息获取的交流成本，减小知识获取的阻碍,简称“降低交流成本”
+        </h1>
+        <h1>目标：“根据要学的东西，自动生成回形针视频”</h1>
+      </span>
+    </el-drawer>
+
     <div id="jsmind_container"></div>
   </div>
 </template>
@@ -76,6 +106,10 @@ export default {
 
   data() {
     return {
+      // Drawer抽屉
+      drawer: false,
+      direction: "rtl",
+
       // seacherbyroot
       restaurants: [],
 
@@ -96,7 +130,7 @@ export default {
       nodehref: "",
       nodetopic: "",
       testjm: null,
-      exword: "知识点",
+      exword: "",
       splice: "不带上节点",
     };
   },
@@ -350,14 +384,14 @@ export default {
         mode: "full",
       };
       // 实现了拓展节点后实时刷新思维导图
-      if (this.testjm == null){
+      if (this.testjm == null) {
         var jm = jsMind.show(options, mind);
-      }else{
+        // 这个要放在这，否则就会expand一次节点有就无法再次选中节点了
+        this.testjm = jm;
+      } else {
         // 如果this.testjm.show(options, mind)，就会报错，应该不允许重复赋值options
         this.testjm.show(mind);
       }
-
-      this.testjm = jm;
     },
 
     // searchbyroot的输入建议--element
