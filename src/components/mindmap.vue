@@ -75,6 +75,9 @@
         <h1>
           这个项目的目的是降低信息获取的交流成本，减小知识获取的阻碍,简称“降低交流成本”
         </h1>
+        <h1>
+          我想了解更多更多这个世界的原理
+        </h1>
         <h1>目标：“根据要学的东西，自动生成回形针视频”</h1>
       </span>
     </el-drawer>
@@ -131,6 +134,39 @@ export default {
       testjm: null,
       exword: "",
       splice: "不带上节点",
+
+      // jsmind的options
+      options: {
+        container: "jsmind_container",
+        editable: true,
+        theme: "info",
+        mode: "full",
+        // shortcut: {
+        //   enable: true, // 是否启用快捷键
+        //   // 命名的快捷键事件处理器
+        //   handles: {
+        //     dosomething: function (jm, e) {
+        //       // do something...
+        //       // atest = "nihao";
+        //       atest = "nihao";
+        //     },
+        //   },
+        //   mapping: {
+        //     // 快捷键映射
+        //     // addchild: 45, // <Insert>
+        //     // addbrother: 13, // <Enter>
+        //     // editnode: 113, // <F2>
+        //     // delnode: 46, // <Delete>
+        //     // toggle: 32, // <Space>
+        //     // left: 37, // <Left>
+        //     // up: 38, // <Up>
+        //     // right: 39, // <Right>
+        //     // down: 40, // <Down>
+        //     // 示例
+        //     dosomething: 65, // <F1>
+        //   },
+        // },
+      },
     };
   },
   created() {},
@@ -188,12 +224,13 @@ export default {
               data: rootdata,
             };
 
-            var options = {
-              container: "jsmind_container",
-              editable: true,
-              theme: "info",
-              mode: "full",
-            };
+            var options = this.options;
+            // {
+            //   container: "jsmind_container",
+            //   editable: true,
+            //   theme: "info",
+            //   mode: "full",
+            // };
             var jm = jsMind.show(options, mind);
             // jm.add_node("sub2", "sub23", "new node", { "background-color": "red" });
             // jm.set_node_color("sub21", "green", "#ccc");
@@ -385,12 +422,37 @@ export default {
         data: inputdata,
       };
 
-      var options = {
-        container: "jsmind_container",
-        editable: true,
-        theme: "info",
-        mode: "full",
-      };
+      var options = this.options;
+      // {
+      //   container: "jsmind_container",
+      //   editable: true,
+      //   theme: "info",
+      //   mode: "full",
+      //   shortcut: {
+      //     enable: true, // 是否启用快捷键
+      //     // 命名的快捷键事件处理器
+      //     handles: {
+      //       'dosomething': function (jm, e) {
+      //         // do something...
+      //         alert("nihao");
+      //       },
+      //     },
+      //     mapping: {
+      //       // 快捷键映射
+      //       // addchild: 45, // <Insert>
+      //       // addbrother: 13, // <Enter>
+      //       // editnode: 113, // <F2>
+      //       // delnode: 46, // <Delete>
+      //       // toggle: 32, // <Space>
+      //       // left: 37, // <Left>
+      //       // up: 38, // <Up>
+      //       // right: 39, // <Right>
+      //       // down: 40, // <Down>
+      //       // 示例
+      //       dosomething: 65, // <F1>
+      //     },
+      //   },
+      // };
       // 实现了拓展节点后实时刷新思维导图
       if (this.testjm == null) {
         var jm = jsMind.show(options, mind);
