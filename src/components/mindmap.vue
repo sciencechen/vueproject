@@ -1,5 +1,35 @@
 <template>
   <div id="//jsmind_container">
+  <el-backtop :bottom="100">
+    <div
+      style="{
+        height: 100%;
+        width: 100%;
+        background-color: #f2f5f6;
+        box-shadow: 0 0 6px rgba(0,0,0, .12);
+        text-align: center;
+        line-height: 40px;
+        color: #1989fa;
+      }"
+    >
+      UP
+    </div>
+    <div
+      :style="{
+        'right': '20px',
+        'bottom': '20px'
+      }"
+      class="el-backtop">
+      <slot>
+        <el-button
+        type="danger"
+        icon="el-icon-delete"
+        circle
+        v-on:click.stop="deletenode()"
+      ></el-button>
+      </slot>
+    </div>
+  </el-backtop>
     <div>
       topic:
       <el-input
@@ -93,6 +123,7 @@
       ></el-button>
     </div>
     <div id="jsmind_container"></div>
+    
   </div>
 </template>
 <script>

@@ -13,7 +13,10 @@ module.exports = {
     proxyTable: {
 
       ["/mindmap"]:{
+        // 服务器模式
         target:'http://127.0.0.1:8000',
+        // 本地模式，访问的是服务器前端代理后的url，不是后端直接的url
+        // target:'http://120.78.208.184:8080',
           changeOrigin:true,
             pathRewrite: {
               '^/mindmap': '/mindmap'   //需要rewrite的,
