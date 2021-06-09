@@ -1,35 +1,76 @@
 <template>
   <div id="//jsmind_container">
-  <el-backtop :bottom="100">
-    <div
-      style="{
-        height: 100%;
-        width: 100%;
-        background-color: #f2f5f6;
-        box-shadow: 0 0 6px rgba(0,0,0, .12);
-        text-align: center;
-        line-height: 40px;
-        color: #1989fa;
-      }"
-    >
-      UP
+  <!-- <div>悬浮"上滑至顶"和"悬浮删除"</div> -->
+    <el-backtop :bottom="100">
+      <div
+        style="
+           {
+            height: 100%;
+            width: 100%;
+            background-color: #f2f5f6;
+            box-shadow: 0 0 6px rgba(0, 0, 0, 0.12);
+            text-align: center;
+            line-height: 40px;
+            color: #1989fa;
+          }
+        "
+      >
+        UP
+      </div>
+      <div
+        :style="{
+          right: '20px',
+          bottom: '20px',
+        }"
+        class="el-backtop"
+      >
+        <slot>
+          <el-button
+            type="danger"
+            icon="el-icon-delete"
+            circle
+            v-on:click.stop="deletenode()"
+          ></el-button>
+        </slot>
+      </div>
+    </el-backtop>
+    <!-- <div>悬浮"拓展节点"</div> -->
+    <div>
+      <div
+        :style="{
+          left: '120px',
+          bottom: '120px',
+        }"
+        class="el-backtop"
+      >
+        <slot>
+          <div style="margin-top: 20px">
+            <el-radio-group v-model="splice" size="mini">
+              <el-radio-button label="带上节点"></el-radio-button>
+              <el-radio-button label="不带上节点"></el-radio-button>
+            </el-radio-group>
+            <br />
+            <el-input
+              v-model="exword"
+              placeholder="请输入拓展词"
+              style="width: 200px"
+            ></el-input>
+            <el-button type="primary" v-on:click="expandnode()"
+              >拓展节点</el-button
+            >
+            <br />
+            <el-radio-group v-model="exword" size="medium">
+              <el-radio-button label="历史"></el-radio-button>
+              <el-radio-button label="原理"></el-radio-button>
+              <el-radio-button label="要学什么"></el-radio-button>
+              <el-radio-button label="学习路线"></el-radio-button>
+              <el-radio-button label="知识点"></el-radio-button>
+              <el-radio-button label="目的"></el-radio-button>
+            </el-radio-group>
+          </div>
+        </slot>
+      </div>
     </div>
-    <div
-      :style="{
-        'right': '20px',
-        'bottom': '20px'
-      }"
-      class="el-backtop">
-      <slot>
-        <el-button
-        type="danger"
-        icon="el-icon-delete"
-        circle
-        v-on:click.stop="deletenode()"
-      ></el-button>
-      </slot>
-    </div>
-  </el-backtop>
     <div>
       topic:
       <el-input
@@ -105,12 +146,8 @@
         <h1>
           这个项目的目的是降低信息获取的交流成本，减小知识获取的阻碍,简称“降低交流成本”
         </h1>
-        <h1>
-          我想了解更多更多这个世界的原理
-        </h1>
-        <h1>
-          基于“客观现象”的学习——如“纹波”
-        </h1>
+        <h1>我想了解更多更多这个世界的原理</h1>
+        <h1>基于“客观现象”的学习——如“纹波”</h1>
         <h1>目标：“根据要学的东西，自动生成回形针视频”</h1>
       </span>
     </el-drawer>
@@ -123,7 +160,6 @@
       ></el-button>
     </div>
     <div id="jsmind_container"></div>
-    
   </div>
 </template>
 <script>
