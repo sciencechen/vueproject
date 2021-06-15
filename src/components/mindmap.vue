@@ -55,7 +55,8 @@
               placeholder="请输入拓展词"
               style="width: 200px"
             ></el-input>
-            <el-button type="primary" v-on:click="expandnode()"
+            <!-- <div>添加.stop，看看可不可以解决爬虫防爬问题，因为正常来说，我的请求频率又不高，莫非是因为这个class导致瞬间二次请求了</div> -->
+            <el-button type="primary" v-on:click.stop="expandnode()"
               >拓展节点</el-button
             >
             <br />
