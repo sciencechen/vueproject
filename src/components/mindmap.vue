@@ -35,7 +35,6 @@
       </div>
     </el-backtop>
     <!-- <div>悬浮"拓展节点"</div> -->
-    <div>
       <div
         :style="{
           left: '120px',
@@ -71,7 +70,6 @@
           </div>
         </slot>
       </div>
-    </div>
     <div>
       topic:
       <el-input
